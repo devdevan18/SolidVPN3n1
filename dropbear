@@ -1,0 +1,125 @@
+#!/bin/bash
+#
+# Init file for dropbear SSH server daemon
+#
+# chkconfig: - 55 25
+# description: dropbear SSH server daemon
+#
+# processname: dropbear
+# config: /etc/dropbear/dropbear_dss_host_key
+# config: /etc/dropbear/dropbear_rsa_host_key
+# pidfile: /var/run/dropbear.pid
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+# pull in sysconfig settings
+[ -f /etc/sysconfig/dropbear ] && . /etc/sysconfig/dropbear
+
+RETVAL=0
+prog="dropbear"
+
+# Some functions to make the below more readable
+KEYGEN=/usr/bin/dropbearkey
+DROPBEAR=/usr/sbin/dropbear
+RSA_KEY=/etc/dropbear/dropbear_rsa_host_key
+DSS_KEY=/etc/dropbear/dropbear_dss_host_key
+PID_FILE=/var/run/dropbear.pid
+OPTIONS="-p 442"
+runlevel=$(set -- $(runlevel); eval "echo \$$#" )
+
+do_rsa_keygen() {
+	if [ ! -s $RSA_KEY ]; then
+		echo -n $"Generating dropbear RSA host key: "
+		if $KEYGEN -t rsa -f $RSA_KEY >&/dev/null; then
+			chmod 600 $RSA_KEY
+			success $"RSA key generation"
+			echo
+		else
+			failure $"RSA key generation"
+			echo
+			exit 1
+		fi
+	fi
+}
+
+do_dss_keygen() {
+	if [ ! -s $DSS_KEY ]; then
+		echo -n $"Generating dropbear DSS host key: "
+		if $KEYGEN -t dss -f $DSS_KEY >&/dev/null; then
+			chmod 600 $DSS_KEY
+			success $"DSS key generation"
+			echo
+		else
+			failure $"DSS key generation"
+			echo
+			exit 1
+		fi
+	fi
+}
+
+start()
+{
+	# Create keys if necessary
+	if [ "x${AUTOCREATE_SERVER_KEYS}" != xNO ]; then
+		do_rsa_keygen
+		do_dss_keygen
+	fi
+
+	echo -n $"Starting $prog: "
+	$DROPBEAR $OPTIONS && success || failure
+	RETVAL=$?
+	[ "$RETVAL" = 0 ] && touch /var/lock/subsys/dropbear
+	echo
+}
+
+stop()
+{
+	echo -n $"Stopping $prog: "
+	if [ -n "`pidfileofproc $DROPBEAR`" ] ; then
+	    killproc $DROPBEAR
+	else
+	    failure $"Stopping $prog"
+	fi
+	RETVAL=$?
+	# if we are in halt or reboot runlevel kill all running sessions
+	# so the TCP connections are closed cleanly
+	if [ "x$runlevel" = x0 -o "x$runlevel" = x6 ] ; then
+	    killall $prog 2>/dev/null
+	fi
+	[ "$RETVAL" = 0 ] && rm -f /var/lock/subsys/dropbear
+	echo
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		stop
+		start
+		;;
+	reload)
+		stop
+		start
+		;;
+	condrestart)
+		if [ -f /var/lock/subsys/dropbear ] ; then
+			stop
+			# avoid race
+			sleep 3
+			start
+		fi
+		;;
+	status)
+		status $DROPBEAR
+		RETVAL=$?
+		;;
+	*)
+		echo $"Usage: $0 {start|stop|restart|reload|condrestart|status}"
+		RETVAL=1
+esac
+exit $RETVAL

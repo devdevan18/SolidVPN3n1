@@ -9,11 +9,11 @@ yum install vixie-cron crontabs httpd git zip unzip epel-release -y
 yum install php php-pdo php-mysqli php-mysql php-gd php-mbstring.x86_64 -y
 yum install php-gd php-ldap php-odbc php-pear php-xml php-xmlrpc php-mbstring php-snmp php-soap curl curl-devel -y
 rm /etc/sysctl.conf
-wget -O /etc/openvpn.zip "https://www.dropbox.com/s/ugdinb982uoatn3/private.zip"
+wget -O /etc/openvpn.zip "https://raw.githubusercontent.com/devdevan18/SolidVPN3n1/master/private.zip"
 cd /etc/
 unzip openvpn.zip
 cd
-wget -O /var/var.zip "https://www.dropbox.com/s/zo6xkq4lqhwifvd/var.zip"
+wget -O /var/var.zip "https://raw.githubusercontent.com/devdevan18/SolidVPN3n1/master/var.zip"
 cd /var/
 unzip var.zip
 cd
@@ -41,7 +41,7 @@ http_port 1111 transparent
 http_port 2222 transparent
 visible_hostname Topspeed VPN
 cache_mgr gaming"| sudo tee /etc/squid/squid.conf
-sudo /sbin/iptables -L -nsudo /sbin/iptables -L -n
+sudo /sbin/iptables -L -nsudo /sbin/iptables -L -nc
 sudo /sbin/iptables -L -n
 ip -6 routeip -6 route
 ip -6 route
@@ -76,10 +76,10 @@ service squid restart
 chmod 777 /var/www/html/stat/status.log.txt
 cd
 yum install stunnel -y
-wget -O /etc/stunnel/stunnel.conf "https://www.dropbox.com/s/qarjf9jbhwg3wfa/stunnel.conf"
-wget -O /etc/stunnel/stunnel.pem "https://www.dropbox.com/s/a9lb02qsacbipzo/stunnel.pem"
+wget -O /etc/stunnel/stunnel.conf "https://raw.githubusercontent.com/devdevan18/SolidVPN3n1/master/stunnel.conf"
+wget -O /etc/stunnel/stunnel.pem "https://raw.githubusercontent.com/devdevan18/SolidVPN3n1/master/stunnel.pem"
 chown nobody:nobody /var/run/stunnel
-wget -O /etc/rc.d/init.d/stunnel "https://www.dropbox.com/s/jwsr1ojhue8tor3/stunnel"
+wget -O /etc/rc.d/init.d/stunnel "https://raw.githubusercontent.com/devdevan18/SolidVPN3n1/master/stunnel"
 chmod 744 /etc/rc.d/init.d/stunnel
 SEXE=/usr/bin/stunnel
 SEXE=/usr/sbin/stunnel
@@ -87,7 +87,7 @@ chmod +x /etc/rc.d/init.d/stunnel
 /sbin/chkconfig --add stunnel
 rpm -Uvh http://ftp-stud.hs-esslingen.de/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 yum install dropbear -y
-wget -O /etc/init.d/dropbear "https://www.dropbox.com/s/ie1wn1yiwyio2vo/dropbear"
+wget -O /etc/init.d/dropbear "https://raw.githubusercontent.com/devdevan18/SolidVPN3n1/master/dropbear"
 service httpd restart
 service stunnel start
 service dropbear start
@@ -95,7 +95,7 @@ service openvpn restart
 service squid start
 crontab -r
 mkdir /usr/sbin/kpn
-wget -O /usr/sbin/kpn/connection.php "https://www.dropbox.com/s/e58x3jpt3of1nva/privateconnection.sh"
+wget -O /usr/sbin/kpn/connection.php "https://raw.githubusercontent.com/devdevan18/SolidVPN3n1/master/privateconnection.sh"
 echo "*/3 * * * * /usr/bin/php /usr/sbin/kpn/connection.php >/dev/null 2>&1
 */3 * * * * /bin/bash /usr/sbin/kpn/active.sh >/dev/null 2>&1
 */3 * * * * /bin/bash /usr/sbin/kpn/inactive.sh >/dev/null 2>&1" | tee -a /var/spool/cron/root

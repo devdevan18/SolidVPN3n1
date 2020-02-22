@@ -2,10 +2,10 @@
 error_reporting(E_ERROR | E_PARSE);
 ini_set('display_errors', '1');
 
-$DB_host = '185.2.168.53';
-$DB_user = 'solidvpn_one';
-$DB_pass = 'solidvpn_one';
-$DB_name = 'solidvpn_one';
+$DB_host = '31.22.4.235';
+$DB_user = 'fuzevpnt_solid';
+$DB_pass = 'solidvpn07';
+$DB_name = 'fuzevpnt_solid';
 
 $mysqli = new MySQLi($DB_host,$DB_user,$DB_pass,$DB_name);
 if ($mysqli->connect_error) {
